@@ -1,0 +1,47 @@
+{% extends "blog/base.html" %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Latest posts{% endif %}{% endblock %}
+{% block content %}
+<div class="layout">
+  <section>
+    <h1>
+      {% if category %}{{ category.name }}{% elif query %}Results for “{{ query }}”{% else %}Latest posts{% endif %}
+    </h1>
+
+    {% for post in page %}
+      <article class="post-card">
+        <p class="meta">
+          {{ post.published_at|date:"M j, Y" }} · {{ post.reading_minutes }} min read
+          {% if post.category %} · <a href="{{ post.category.get_absolute_url }}">{{ post.category.name }}</a>{% endif %}
+        </p>
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p>{{ post.excerpt|default:post.body|truncatewords:40 }}</p>
+        <a href="{{ post.get_absolute_url }}" class="more">Read more →</a>
+      </article>
+    {% empty %}
+      <p>No posts found.</p>
+    {% endfor %}
+
+    {% if page.has_other_pages %}
+      <nav class="pagination">
+        {% if page.has_previous %}
+          <a href="?page={{ page.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">← Newer</a>
+        {% endif %}
+        <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}
+          <a href="?page={{ page.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Older →</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </section>
+
+  <aside class="sidebar">
+    <h3>Categories</h3>
+    <ul>
+      <li><a href="{% url 'blog:post_list' %}" class="{% if not category %}active{% endif %}">All posts</a></li>
+      {% for c in categories %}
+        <li><a href="{{ c.get_absolute_url }}" class="{% if c == category %}active{% endif %}">{{ c.name }} <span>{{ c.post_count }}</span></a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+</div>
+{% endblock %}

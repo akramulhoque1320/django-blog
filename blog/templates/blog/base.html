@@ -1,0 +1,27 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Dev Notes{% endblock %} · Dev Notes</title>
+  <link rel="stylesheet" href="{% static 'blog/style.css' %}" />
+</head>
+<body>
+  <header class="topbar">
+    <a href="{% url 'blog:post_list' %}" class="brand">✍️ Dev Notes</a>
+    <form action="{% url 'blog:post_list' %}" class="search">
+      <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search posts…" aria-label="Search posts" />
+    </form>
+    <a href="{% url 'admin:index' %}" class="admin-link">Admin</a>
+  </header>
+
+  <main class="container">
+    {% for message in messages %}
+      <div class="flash {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">Dev Notes · a Django blog by Akramul Hoque (Ahnaf)</footer>
+</body>
+</html>

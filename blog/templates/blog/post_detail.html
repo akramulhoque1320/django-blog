@@ -1,0 +1,33 @@
+{% extends "blog/base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article class="post">
+  <a href="{% url 'blog:post_list' %}" class="back">← All posts</a>
+  <h1>{{ post.title }}</h1>
+  <p class="meta">
+    By {{ post.author.get_full_name|default:post.author.username }} · {{ post.published_at|date:"F j, Y" }}
+    · {{ post.reading_minutes }} min read
+    {% if post.category %} · <a href="{{ post.category.get_absolute_url }}">{{ post.category.name }}</a>{% endif %}
+  </p>
+  <div class="body">{{ post.body|linebreaks }}</div>
+</article>
+
+<section id="comments" class="comments">
+  <h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
+  {% for comment in comments %}
+    <div class="comment">
+      <p class="meta"><strong>{{ comment.name }}</strong> · {{ comment.created_at|date:"M j, Y H:i" }}</p>
+      <p>{{ comment.body|linebreaksbr }}</p>
+    </div>
+  {% empty %}
+    <p class="meta">No comments yet. Be the first!</p>
+  {% endfor %}
+
+  <h3>Leave a comment</h3>
+  <form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Post comment</button>
+  </form>
+</section>
+{% endblock %}
